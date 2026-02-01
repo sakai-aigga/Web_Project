@@ -8,7 +8,8 @@ export default function Home() {
 
       {/* Navbar */}
         <Nav />
-
+      <br />
+      <br />
       {/* Hero */}
       <div className="flex-1 flex flex-col justify-center items-center text-center px-6">
         <h2 className="text-4xl font-bold mb-4 text-gray-800">
