@@ -6,7 +6,6 @@ Provides a fast, modern frontend setup for building responsive and interactive U
 ## 📁 File Structure
 ```
     Web_Project/
-    ├── public/ # Static files
     ├── src/ # Application source code
     │ ├── components/ # Reusable UI components
     │ ├── pages/ # Page views
