@@ -8,6 +8,7 @@ import Home from "./pages/Homepage";
 import CreateCourse from "./pages/CreateCourse"
 import ShowProfile from "./pages/Profile";
 import Courses from "./pages/MyCourses";
+import ManageUploads from "./pages/ManageUploads";
 
 export default function App() {
   return (
@@ -18,9 +19,10 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/student-dashboard" element={<StudentDashboard />} />
         <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
-        <Route path="/create-course" element={<CreateCourse />}></Route>
-        <Route path="/profile" element={<ShowProfile />}></Route>
-        <Route path="/my-courses" element={<Courses />}></Route>
+        <Route path="/create-course" element={<CreateCourse />} />
+        <Route path="/profile" element={<ShowProfile />} />
+        <Route path="/my-courses" element={<Courses />} />
+        <Route path="/manage-uploads" element={<ManageUploads />} />
       </Routes>
     </BrowserRouter>
   );
