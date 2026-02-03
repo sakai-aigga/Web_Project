@@ -3,14 +3,14 @@ const Nav = () => {
     <div className="flex items-center justify-between px-6 py-4 bg-white shadow">
       {/* Logo / Brand */}
       <div className="text-xl font-bold">
-        <a href="/homepage" className= "text-blue-600">
+        <a href="/" className= "text-blue-600">
           LMS
         </a>
       </div>
 
       {/* Navigation Links */}
       <div className="flex items-center gap-6">
-        <a href="/homepage" className="text-gray-600 hover:text-black">
+        <a href="/" className="text-gray-600 hover:text-black">
           Home
         </a>
         <a href="#" className="text-gray-600 hover:text-black">
