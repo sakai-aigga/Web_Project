@@ -9,6 +9,7 @@ import CreateCourse from "./pages/CreateCourse"
 import ShowProfile from "./pages/Profile";
 import Courses from "./pages/MyCourses";
 import ManageUploads from "./pages/ManageUploads";
+import Updates from "./pages/Updates";
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
         <Route path="/profile" element={<ShowProfile />} />
         <Route path="/my-courses" element={<Courses />} />
         <Route path="/manage-uploads" element={<ManageUploads />} />
+        <Route path="/teacher-updates"element={<Updates />} />
       </Routes>
     </BrowserRouter>
   );
