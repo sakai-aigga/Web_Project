@@ -9,7 +9,7 @@ export default function ShowProfile () {
               <Sidebar />
               {/* Main content */}
               <div className="p-6 flex flex-col">
-                <h1 className="text-3xl font-semibold">Hello User,</h1>
+                <h1 className="text-2xl font-bold">Hello User,</h1>
                 <br />
                 <h1 className="font-semibold pb-3">You can edit your profile information here.</h1>
                 {/* Edit Profile form */}
