@@ -1,23 +1,9 @@
 import Sidebar from "../components/Sidebar";
 import StatCard from "../components/StatCard";
-import Nav from "../components/Nav";
 import { BookOpen, FileText, Download, Bell, Clock } from "lucide-react";
+import {materials, courses} from "../components/Uploads"
 
 export default function TeacherDashboard() {
-  const materials = [
-    "Web Engineering - Unit 1.pdf",
-    "Software Engineering - UML.pptx",
-    "Database Notes.docx",
-    "React Intro Video.mp4",
-  ];
-
-  const courses = [
-    "Computer Science Basics",
-    "Software Engineering",
-    "Database Systems",
-    "Web Development",
-  ];
-
   return (
     <div className="flex min-h-screen bg-gray-50">
       <Sidebar />
