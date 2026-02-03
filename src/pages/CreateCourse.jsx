@@ -3,7 +3,7 @@ import Input from "../components/Input";
 
 export default function CreateCourse() {
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-gray-200">
       <Sidebar />
       {/* Main content */}
       <div className="flex-1 p-10 flex">
