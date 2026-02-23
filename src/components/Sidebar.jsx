@@ -5,14 +5,12 @@ import {
   User,
   FileText,
   Bell,
-  MenuIcon,
-  X,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
 export default function Sidebar({ userType = "teacher" }) {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const menuItems = {
     student: [
@@ -32,41 +30,53 @@ export default function Sidebar({ userType = "teacher" }) {
   };
 
   return (
-    <aside
-      className={`min-h-screen bg-blue-700 text-white flex flex-col
-      transition-all duration-300
-      ${isOpen ? "w-64" : "w-16"}`}
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between p-5">
-        {isOpen && (
-          <Link to="/teacher-dashboard" className="text-2xl font-bold">
-            LMS
+    <>
+      {/* Placeholder to reserve space in the flex layout */}
+      <div className="w-20 flex-shrink-0 transition-all duration-300" />
+
+      <aside
+        onMouseEnter={() => setIsExpanded(true)}
+        onMouseLeave={() => setIsExpanded(false)}
+        className={`fixed top-0 left-0 h-full bg-blue-700 text-white flex flex-col z-50
+        transition-all duration-300 ease-in-out shadow-xl
+        ${isExpanded ? "w-64" : "w-20"}`}
+      >
+        {/* Header */}
+        <div className={`flex items-center p-5 mb-4 ${isExpanded ? "justify-between" : "justify-center"}`}>
+          <Link to="/teacher-dashboard" className="text-2xl font-bold flex items-center gap-2">
+            <div className="bg-white text-blue-700 min-w-10 h-10 rounded-lg flex items-center justify-center font-black">
+              L
+            </div>
+            {isExpanded && <span className="whitespace-nowrap">LMS</span>}
           </Link>
-        )}
+        </div>
 
-        <button onClick={() => setIsOpen(!isOpen)}>
-          {isOpen ? <X size={22} /> : <MenuIcon size={22} />}
-        </button>
-      </div>
+        {/* Menu scrollable area */}
+        <ul className="flex-1 space-y-2 px-3 overflow-y-auto overflow-x-hidden custom-scrollbar">
+          {menuItems[userType].map((item, idx) => (
+            <li key={idx}>
+              <Link
+                to={item.link}
+                className={`flex items-center gap-4 px-3 py-3 rounded-xl
+                hover:bg-blue-600 transition-all duration-200 group
+                ${!isExpanded && "justify-center"}`}
+                title={!isExpanded ? item.title : ""}
+              >
+                <div className={`transition-transform duration-200 ${!isExpanded && "group-hover:scale-110"}`}>
+                  {item.icon}
+                </div>
+                {isExpanded && (
+                  <span className="whitespace-nowrap font-medium animate-fadeIn">
+                    {item.title}
+                  </span>
+                )}
+              </Link>
+            </li>
+          ))}
+        </ul>
 
-      {/* Menu */}
-      <ul className="flex-1 space-y-2 px-2">
-        {menuItems[userType].map((item, idx) => (
-          <li key={idx}>
-            <Link
-              to={item.link}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg
-              hover:bg-blue-600 transition-colors
-              ${!isOpen && "justify-center"}`}
-              title={!isOpen ? item.title : ""}
-            >
-              {item.icon}
-              {isOpen && <span className="whitespace-nowrap">{item.title}</span>}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </aside>
+        {/* Footer / User info could go here */}
+      </aside>
+    </>
   );
 }
