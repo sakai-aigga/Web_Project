@@ -9,6 +9,7 @@ import ShowProfile from "./pages/Profile";
 import Courses from "./pages/MyCourses";
 import ManageUploads from "./pages/ManageUploads";
 import Updates from "./pages/Updates";
+import SidebarLayout from "./components/SidebarLayout";
 
 export default function App() {
   return (
@@ -17,13 +18,17 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/student-dashboard" element={<StudentDashboard />} />
-        <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
-        <Route path="/create-course" element={<CreateCourse />} />
-        <Route path="/profile" element={<ShowProfile />} />
-        <Route path="/my-courses" element={<Courses />} />
-        <Route path="/manage-uploads" element={<ManageUploads />} />
-        <Route path="/teacher-updates"element={<Updates />} />
+
+        {/* Dashboard Routes with Persistent Sidebar */}
+        <Route element={<SidebarLayout />}>
+          <Route path="/student-dashboard" element={<StudentDashboard />} />
+          <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
+          <Route path="/create-course" element={<CreateCourse />} />
+          <Route path="/profile" element={<ShowProfile />} />
+          <Route path="/my-courses" element={<Courses />} />
+          <Route path="/manage-uploads" element={<ManageUploads />} />
+          <Route path="/teacher-updates" element={<Updates />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

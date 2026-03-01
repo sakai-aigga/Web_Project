@@ -31,8 +31,11 @@ export default function Sidebar({ userType = "teacher" }) {
 
   return (
     <>
-      {/* Placeholder to reserve space in the flex layout */}
-      <div className="w-20 flex-shrink-0 transition-all duration-300" />
+      {/* Placeholder to reserve space in the flex layout and push content */}
+      <div
+        className={`flex-shrink-0 transition-all duration-300 ease-in-out
+        ${isExpanded ? "w-64" : "w-20"}`}
+      />
 
       <aside
         onMouseEnter={() => setIsExpanded(true)}
