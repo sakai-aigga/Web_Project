@@ -1,26 +1,34 @@
+/**
+ * Authentication Controller
+ * 
+ * Handles:
+ * - User registration
+ * - User login
+ * - Google OAuth
+ * - Get current user
+ */
+
 import { validationResult } from 'express-validator';
+import mongoose from 'mongoose';
 import User from '../models/User.js';
 import { generateTokens } from '../utils/jwt.js';
+import { env } from '../config/env.js';
 
-/**
- * @desc    Register new user
- * @route   POST /api/auth/register
- * @access  Public
- */
 export const register = async (req, res, next) => {
   try {
-    // Check validation errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      // Format validation errors into a single message
+      const errorMessages = errors.array().map(err => err.msg).join(', ');
       return res.status(400).json({
         success: false,
+        message: errorMessages,
         errors: errors.array(),
       });
     }
 
     const { firstName, lastName, email, password, role } = req.body;
 
-    // Check if user exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({
@@ -28,17 +36,15 @@ export const register = async (req, res, next) => {
         message: 'Email already registered',
       });
     }
-
-    // Create user
+const normalizedRole = role ? role.toLowerCase() : 'student';
     const user = await User.create({
       firstName,
       lastName,
       email,
       password,
-      role: role || 'Student',
+      role: normalizedRole,
     });
 
-    // Generate tokens
     const tokens = generateTokens(user);
 
     res.status(201).json({
@@ -54,43 +60,45 @@ export const register = async (req, res, next) => {
   }
 };
 
-/**
- * @desc    Login user
- * @route   POST /api/auth/login
- * @access  Public
- */
 export const login = async (req, res, next) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      const errorMessages = errors.array().map(err => err.msg).join(', ');
       return res.status(400).json({
         success: false,
+        message: errorMessages,
         errors: errors.array(),
       });
     }
 
     const { email, password } = req.body;
 
-    // Find user with password
+    // Check database connection
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(500).json({
+        success: false,
+        message: 'Database connection error',
+      });
+    }
+
     const user = await User.findOne({ email }).select('+password');
     
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid credentials',
+        message: 'User not found',
       });
     }
 
-    // Check password
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid credentials',
+        message: 'Invalid password',
       });
     }
 
-    // Check if account is active
     if (!user.isActive) {
       return res.status(401).json({
         success: false,
@@ -98,7 +106,7 @@ export const login = async (req, res, next) => {
       });
     }
 
-    // Generate tokens
+    await user.updateLastLogin();
     const tokens = generateTokens(user);
 
     res.json({
@@ -114,17 +122,11 @@ export const login = async (req, res, next) => {
   }
 };
 
-/**
- * @desc    Google OAuth callback
- * @route   GET /api/auth/google/callback
- * @access  Public
- */
 export const googleCallback = async (req, res, next) => {
   try {
     const tokens = generateTokens(req.user);
     
-    // Redirect to frontend with tokens
-    const redirectUrl = `${process.env.FRONTEND_URL}/oauth-callback?` +
+    const redirectUrl = `${env.frontend.url}/oauth-callback?` +
       `token=${tokens.accessToken}&` +
       `refreshToken=${tokens.refreshToken}`;
     
@@ -134,11 +136,6 @@ export const googleCallback = async (req, res, next) => {
   }
 };
 
-/**
- * @desc    Get current logged-in user
- * @route   GET /api/auth/me
- * @access  Private
- */
 export const getMe = async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id)
@@ -153,11 +150,6 @@ export const getMe = async (req, res, next) => {
   }
 };
 
-/**
- * @desc    Refresh access token
- * @route   POST /api/auth/refresh
- * @access  Public (with refresh token)
- */
 export const refreshToken = async (req, res, next) => {
   try {
     const { refreshToken } = req.body;
@@ -190,18 +182,53 @@ export const refreshToken = async (req, res, next) => {
   }
 };
 
-/**
- * @desc    Logout user
- * @route   POST /api/auth/logout
- * @access  Private
- */
 export const logout = async (req, res, next) => {
   try {
-    // In a more complex setup, you might blacklist the token
-    // For now, client-side token removal is sufficient
     res.json({
       success: true,
       message: 'Logout successful',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const changePassword = async (req, res, next) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Current password and new password are required',
+      });
+    }
+
+    if (newPassword.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: 'New password must be at least 8 characters long',
+      });
+    }
+
+    // Find user with password field included
+    const user = await User.findById(req.user._id).select('+password');
+    const isCurrentPasswordValid = await user.comparePassword(currentPassword);
+
+    if (!isCurrentPasswordValid) {
+      return res.status(400).json({
+        success: false,
+        message: 'Current password is incorrect',
+      });
+    }
+
+    // Update password
+    user.password = newPassword;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: 'Password changed successfully',
     });
   } catch (error) {
     next(error);
