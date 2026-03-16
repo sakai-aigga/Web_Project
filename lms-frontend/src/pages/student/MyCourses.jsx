@@ -1,33 +1,92 @@
-import { Globe, Book, Search } from "lucide-react";
-import StatCard from "../components/StatCard";
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
+import { Search, BookOpen, Clock, CheckCircle } from 'lucide-react'
+import { useEnrollments } from '../../hooks/useEnrollments'
 
+const MyCourses = () => {
+  const [searchQuery, setSearchQuery] = useState('')
+  const { enrollments, isLoadingEnrollments } = useEnrollments()
 
-export default function Courses() {
-    return (
-        <div className="p-6 flex flex-col flex-wrap">
-            <h1 className="text-2xl font-bold">Enroll Courses</h1>
-            <br />
-            <h1 className="font-semibold pb-3">Available Courses</h1>
-            {/* {Courses available cards}*/}
-            <div className="flex gap-6">
-                <div className="flex flex-col p-2 bg-blue-700 items-end rounded-lg">
-                    <StatCard icon={<Globe />} title="ITEX 120" value="Web Engineering" />
-                    <button className="bg-white px-2 mx-4 mb-2 rounded-sm">Enroll</button>
-                </div>
-                <div className="flex flex-col p-2 bg-green-500 items-end rounded-lg">
-                    <StatCard icon={<Book />} title="VPED 100" value="Instruction Design" />
-                    <button className="bg-white px-2 mx-4 mb-2 rounded-sm">Enroll</button>
-                </div>
-                <div className="flex flex-col p-2 bg-teal-800 items-end rounded-lg">
-                    <StatCard icon={<Search />} title="EDU 120" value="Research Methodology" />
-                    <button className="bg-white px-2 mx-4 mb-2 rounded-sm">Enroll</button>
-                </div>
-            </div>
-            {/* Enrolled Courses Listy */}
-            <div className="flex flex-col bg-gray-50 mt-8 rounded-sm p-4">
-                <p className="font-medium pb-4">Your Courses</p>
-                <p className="">You haven't enrolled in any courses. Click Enroll on any above courses to continue.</p>
-            </div>
+  const filteredEnrollments = enrollments.filter((e) =>
+    e.course.title.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">My Courses</h1>
+          <p className="text-gray-600">Manage your learning journey</p>
         </div>
-    );
+        <Link to="/courses" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+          Browse More Courses
+        </Link>
+      </div>
+
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <input
+          type="text"
+          placeholder="Search your courses..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg"
+        />
+      </div>
+
+      {isLoadingEnrollments ? (
+        <div className="grid md:grid-cols-2 gap-6">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="h-64 bg-gray-200 rounded-xl animate-pulse" />
+          ))}
+        </div>
+      ) : filteredEnrollments.length === 0 ? (
+        <div className="text-center py-12">
+          <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2">No courses yet</h3>
+          <Link to="/courses" className="text-blue-600 hover:underline">Browse Courses</Link>
+        </div>
+      ) : (
+        <div className="grid md:grid-cols-2 gap-6">
+          {filteredEnrollments.map((enrollment) => (
+            <div key={enrollment._id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+              <div className="h-32 bg-gradient-to-br from-blue-500 to-blue-700">
+                <div className="p-4">
+                  {enrollment.status === 'Completed' ? (
+                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">
+                      <CheckCircle className="w-3 h-3" /> Completed
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
+                      <Clock className="w-3 h-3" /> In Progress
+                    </span>
+                  )}
+                </div>
+              </div>
+              <div className="p-5">
+                <h3 className="font-semibold text-gray-900 mb-2">{enrollment.course.title}</h3>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="flex-1 h-2 bg-gray-200 rounded-full">
+                    <div
+                      className="h-full bg-blue-600 rounded-full"
+                      style={{ width: `${enrollment.progress || 0}%` }}
+                    />
+                  </div>
+                  <span className="text-sm text-gray-600">{enrollment.progress || 0}%</span>
+                </div>
+                <Link
+                  to={`/courses/${enrollment.course._id}`}
+                  className="block w-full text-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  Continue Learning
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
 }
+
+export default MyCourses

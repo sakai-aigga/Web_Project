@@ -16,21 +16,21 @@ import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import passport from 'passport';
 import path from 'path';
-import materialRoutes from './routes/material.routes.js';
+//import materialRoutes from './routes/material.routes.js';
 
 import { env } from './config/env.js';
 import { connectDatabase } from './config/database.js';
 import { connectRedis } from './config/redis.js';
-import { configureCloudinary } from './config/cloudinary.js';
+//import { configureCloudinary } from './config/cloudinary.js';
 import { configurePassport } from './config/passport.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 // Import routes
 import authRoutes from './routes/auth.routes.js';
 import userRoutes from './routes/user.routes.js';
-import courseRoutes from './routes/course.routes.js';
-import enrollmentRoutes from './routes/enrollment.routes.js';
-import uploadRoutes from './routes/upload.routes.js';
+//import courseRoutes from './routes/course.routes.js';
+//import enrollmentRoutes from './routes/enrollment.routes.js';
+//import uploadRoutes from './routes/upload.routes.js';
 import healthRoutes from './routes/health.routes.js';
 
 // Initialize Express app
@@ -95,13 +95,13 @@ app.use('/health', healthRoutes);
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api/courses', courseRoutes);
-app.use('/api/enrollments', enrollmentRoutes);
+//app.use('/api/courses', courseRoutes);
+//app.use('/api/enrollments', enrollmentRoutes);
 //app.use('/api/upload', uploadRoutes);
-app.use('/api/uploads', materialRoutes);
+//app.use('/api/uploads', materialRoutes);
 
 // Serve uploaded files statically
-app.use('/uploads', express.static(path.join(process.cwd(), 'uploads', 'materials'))); 
+//app.use('/uploads', express.static(path.join(process.cwd(), 'uploads', 'materials'))); 
 
 // 404 Handler
 app.use((req, res) => {
@@ -119,7 +119,7 @@ const startServer = async () => {
   try {
     await connectDatabase();
     await connectRedis();
-    configureCloudinary();
+    //configureCloudinary();
     
     app.listen(env.port, () => {
       console.log(`
